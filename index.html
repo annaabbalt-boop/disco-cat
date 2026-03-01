@@ -84,12 +84,14 @@
     }
 
     .cat {
-      font-size: clamp(4rem, 14vw, 10rem);
-      line-height: 1;
+      width: clamp(150px, 20vw, 280px);
+      height: auto;
       filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.35));
       animation: dance 650ms ease-in-out infinite alternate;
       transform-origin: center bottom;
       will-change: transform, filter;
+      user-select: none;
+      -webkit-user-drag: none;
     }
 
     .cat.right {
@@ -167,8 +169,8 @@
 
   <div id="club" aria-hidden="true">
     <div class="dance-floor">
-      <div class="cat left" title="Dancing cat">🐱</div>
-      <div class="cat right" title="Dancing cat">🐱</div>
+      <img class="cat left" src="assets/cat-left.svg" alt="Dancing cat" />
+      <img class="cat right" src="assets/cat-right.svg" alt="Dancing cat" />
     </div>
   </div>
   <div class="spark" aria-hidden="true"></div>
