@@ -27,7 +27,11 @@
 
     .center {
       text-align: center;
-      z-index: 2;
+      z-index: 3;
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     #dangerBtn {
@@ -67,7 +71,7 @@
       inset: 0;
       display: none;
       place-items: center;
-      z-index: 1;
+      z-index: 2;
       pointer-events: none;
     }
 
@@ -157,7 +161,28 @@
       opacity: 0.75;
       font-size: 0.9rem;
       font-weight: 600;
-      z-index: 3;
+      z-index: 4;
+    }
+
+    #stopParty {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, 0.65);
+      border-radius: 999px;
+      padding: 0.65rem 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      z-index: 5;
+      backdrop-filter: blur(2px);
+    }
+
+    #stopParty:hover {
+      background: rgba(0, 0, 0, 0.8);
     }
   </style>
 </head>
@@ -174,11 +199,15 @@
     </div>
   </div>
   <div class="spark" aria-hidden="true"></div>
-  <div class="hint">🔊 Click to start party mode</div>
+  <div class="hint" id="startHint">🔊 Click to start party mode</div>
+  <button id="stopParty" class="hidden" aria-label="Stop the party">STOP THE PARTY</button>
 
   <script>
     const btn = document.getElementById('dangerBtn');
     const club = document.getElementById('club');
+    const center = document.querySelector('.center');
+    const startHint = document.getElementById('startHint');
+    const stopBtn = document.getElementById('stopParty');
 
     let audioCtx = null;
     let playing = false;
@@ -230,8 +259,10 @@
       ensureAudio();
       playing = true;
 
+      center.classList.add('hidden');
+      startHint.classList.add('hidden');
+      stopBtn.classList.remove('hidden');
       club.classList.add('active');
-      document.querySelector('.hint').textContent = '🪩 THE CATS HAVE BEEN SUMMONED 🪩';
 
       // first immediate hits
       blip(110, 0.15, 'sawtooth', 0.07, 0);
@@ -241,7 +272,21 @@
       startDiscoLoop();
     }
 
+    function stopParty() {
+      playing = false;
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+
+      club.classList.remove('active');
+      stopBtn.classList.add('hidden');
+      center.classList.remove('hidden');
+      startHint.classList.remove('hidden');
+    }
+
     btn.addEventListener('click', activateParty);
+    stopBtn.addEventListener('click', stopParty);
   </script>
 </body>
 </html>
