@@ -88,14 +88,19 @@
     }
 
     .cat {
-      width: clamp(150px, 20vw, 280px);
+      width: clamp(170px, 22vw, 300px);
       height: auto;
+      border-radius: 14px;
+      border: 3px solid rgba(255,255,255,0.35);
       filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.35));
       animation: dance 650ms ease-in-out infinite alternate;
       transform-origin: center bottom;
       will-change: transform, filter;
       user-select: none;
       -webkit-user-drag: none;
+      object-fit: cover;
+      aspect-ratio: 1 / 1;
+      background: rgba(0,0,0,0.25);
     }
 
     .cat.right {
@@ -184,6 +189,28 @@
     #stopParty:hover {
       background: rgba(0, 0, 0, 0.8);
     }
+
+    #confetti {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      top: -12px;
+      width: 10px;
+      height: 16px;
+      opacity: 0.9;
+      animation: confettiFall linear forwards;
+    }
+
+    @keyframes confettiFall {
+      0% { transform: translateY(-20px) rotate(0deg); opacity: 0.95; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0.85; }
+    }
   </style>
 </head>
 <body>
@@ -194,11 +221,12 @@
 
   <div id="club" aria-hidden="true">
     <div class="dance-floor">
-      <img class="cat left" src="assets/cat-left.svg" alt="Dancing cat" />
-      <img class="cat right" src="assets/cat-right.svg" alt="Dancing cat" />
+      <img class="cat left" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjQ4d3h6eHdwYmNka2QwY2NtbjNqMmR6OG16d2Q4bGQ5cW40czVwNyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lJNoBCvQYp7nq/giphy.gif" alt="Dancing cat gif" />
+      <img class="cat right" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTByM3h6dWpyOTlmaDZ6cWo3d3A2N3RweWlpNm1sMWd2MW9mY3B3aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/GeimqsH0TLDt4tScGw/giphy.gif" alt="Dancing cat gif" />
     </div>
   </div>
   <div class="spark" aria-hidden="true"></div>
+  <div id="confetti" aria-hidden="true"></div>
   <div class="hint" id="startHint">🔊 Click to start party mode</div>
   <button id="stopParty" class="hidden" aria-label="Stop the party">STOP THE PARTY</button>
 
@@ -208,10 +236,12 @@
     const center = document.querySelector('.center');
     const startHint = document.getElementById('startHint');
     const stopBtn = document.getElementById('stopParty');
+    const confettiLayer = document.getElementById('confetti');
 
     let audioCtx = null;
     let playing = false;
     let intervalId = null;
+    let confettiInterval = null;
 
     function ensureAudio() {
       if (!audioCtx) {
@@ -254,6 +284,25 @@
       }, 1000);
     }
 
+    function spawnConfettiBurst(count = 16) {
+      const colors = ['#ff2d55', '#ffd60a', '#7dff72', '#64d2ff', '#b388ff', '#ff9f0a'];
+      for (let i = 0; i < count; i++) {
+        const piece = document.createElement('span');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + 'vw';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDuration = (2.2 + Math.random() * 1.8) + 's';
+        piece.style.transform = `translateY(-20px) rotate(${Math.random() * 360}deg)`;
+        confettiLayer.appendChild(piece);
+        piece.addEventListener('animationend', () => piece.remove());
+      }
+    }
+
+    function startConfetti() {
+      spawnConfettiBurst(26);
+      confettiInterval = setInterval(() => spawnConfettiBurst(14), 420);
+    }
+
     function activateParty() {
       if (playing) return;
       ensureAudio();
@@ -270,6 +319,7 @@
       blip(880, 0.08, 'square', 0.03, 0.16);
 
       startDiscoLoop();
+      startConfetti();
     }
 
     function stopParty() {
@@ -278,6 +328,11 @@
         clearInterval(intervalId);
         intervalId = null;
       }
+      if (confettiInterval) {
+        clearInterval(confettiInterval);
+        confettiInterval = null;
+      }
+      confettiLayer.innerHTML = '';
 
       club.classList.remove('active');
       stopBtn.classList.add('hidden');
