@@ -99,11 +99,13 @@
       user-select: none;
       -webkit-user-drag: none;
       object-fit: cover;
-      aspect-ratio: 1 / 1;
+      object-position: center top;
+      aspect-ratio: 3 / 4;
       background: rgba(0,0,0,0.25);
     }
 
     .cat.right {
+      animation-name: danceRight;
       animation-duration: 560ms;
       animation-direction: alternate-reverse;
     }
@@ -139,6 +141,20 @@
       }
       100% {
         transform: translateY(0) rotate(-10deg) scale(1);
+        filter: hue-rotate(180deg) drop-shadow(0 0 22px rgba(255, 255, 255, 0.5));
+      }
+    }
+
+    @keyframes danceRight {
+      0% {
+        transform: translateY(0) rotate(7deg) scaleX(-1) scale(1);
+        filter: hue-rotate(0deg) drop-shadow(0 0 14px rgba(255, 255, 255, 0.3));
+      }
+      50% {
+        transform: translateY(-22px) rotate(-8deg) scaleX(-1) scale(1.08);
+      }
+      100% {
+        transform: translateY(0) rotate(10deg) scaleX(-1) scale(1);
         filter: hue-rotate(180deg) drop-shadow(0 0 22px rgba(255, 255, 255, 0.5));
       }
     }
@@ -221,8 +237,8 @@
 
   <div id="club" aria-hidden="true">
     <div class="dance-floor">
-      <img class="cat left" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcjQ4d3h6eHdwYmNka2QwY2NtbjNqMmR6OG16d2Q4bGQ5cW40czVwNyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lJNoBCvQYp7nq/giphy.gif" alt="Dancing cat gif" />
-      <img class="cat right" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTByM3h6dWpyOTlmaDZ6cWo3d3A2N3RweWlpNm1sMWd2MW9mY3B3aSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/GeimqsH0TLDt4tScGw/giphy.gif" alt="Dancing cat gif" />
+      <img class="cat left" src="assets/cat-standing.jpg" alt="Standing cat" />
+      <img class="cat right" src="assets/cat-standing.jpg" alt="Standing cat" />
     </div>
   </div>
   <div class="spark" aria-hidden="true"></div>
