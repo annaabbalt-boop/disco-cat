@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Do Not Press</title>
+  <style>
+    :root {
+      --bg1: #0b0b0b;
+      --bg2: #151515;
+      --neon: #ff2d55;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: #fff;
+      background: radial-gradient(circle at 20% 20%, var(--bg2), var(--bg1));
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      transition: background 300ms linear;
+    }
+
+    .center {
+      text-align: center;
+      z-index: 2;
+    }
+
+    #dangerBtn {
+      width: min(70vw, 420px);
+      aspect-ratio: 1 / 1;
+      border: none;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, #ff6b6b, #d80000 55%, #970000);
+      box-shadow:
+        0 0 0 10px #7a0000,
+        0 0 0 20px #4a0000,
+        0 18px 35px rgba(0, 0, 0, 0.5),
+        inset -10px -12px 20px rgba(0, 0, 0, 0.3),
+        inset 8px 8px 15px rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: clamp(1.25rem, 3.4vw, 2rem);
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 90ms ease, filter 200ms ease;
+      user-select: none;
+    }
+
+    #dangerBtn:hover { filter: brightness(1.05); }
+    #dangerBtn:active { transform: translateY(4px) scale(0.985); }
+
+    .subtitle {
+      margin-top: 2rem;
+      opacity: 0.85;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    #club {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    #club.active {
+      display: grid;
+      animation: flashBg 0.45s steps(2, jump-none) infinite;
+    }
+
+    .dance-floor {
+      display: flex;
+      align-items: end;
+      gap: min(10vw, 120px);
+      transform: translateY(8vh);
+    }
+
+    .cat {
+      font-size: clamp(4rem, 14vw, 10rem);
+      line-height: 1;
+      filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.35));
+      animation: dance 650ms ease-in-out infinite alternate;
+      transform-origin: center bottom;
+      will-change: transform, filter;
+    }
+
+    .cat.right {
+      animation-duration: 560ms;
+      animation-direction: alternate-reverse;
+    }
+
+    .spark {
+      position: fixed;
+      inset: -20%;
+      background:
+        repeating-conic-gradient(
+          from 0deg,
+          rgba(255, 255, 255, 0.12) 0deg 8deg,
+          rgba(255, 255, 255, 0) 8deg 16deg
+        );
+      mix-blend-mode: screen;
+      opacity: 0;
+      transform: rotate(0deg) scale(1.2);
+      transition: opacity 240ms ease;
+      pointer-events: none;
+    }
+
+    #club.active + .spark {
+      opacity: 0.65;
+      animation: spin 6s linear infinite;
+    }
+
+    @keyframes dance {
+      0% {
+        transform: translateY(0) rotate(-7deg) scale(1);
+        filter: hue-rotate(0deg) drop-shadow(0 0 14px rgba(255, 255, 255, 0.3));
+      }
+      50% {
+        transform: translateY(-22px) rotate(8deg) scale(1.08);
+      }
+      100% {
+        transform: translateY(0) rotate(-10deg) scale(1);
+        filter: hue-rotate(180deg) drop-shadow(0 0 22px rgba(255, 255, 255, 0.5));
+      }
+    }
+
+    @keyframes flashBg {
+      0%   { background: #030303; }
+      16%  { background: #24002e; }
+      32%  { background: #001f46; }
+      48%  { background: #113300; }
+      64%  { background: #45001f; }
+      80%  { background: #1f1f00; }
+      100% { background: #060606; }
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg) scale(1.2); }
+      to   { transform: rotate(360deg) scale(1.2); }
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.75;
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 3;
+    }
+  </style>
+</head>
+<body>
+  <div class="center">
+    <button id="dangerBtn" aria-label="Do not press button">DO NOT PRESS</button>
+    <div class="subtitle">Seriously. Don’t press it.</div>
+  </div>
+
+  <div id="club" aria-hidden="true">
+    <div class="dance-floor">
+      <div class="cat left" title="Dancing cat">🐱</div>
+      <div class="cat right" title="Dancing cat">🐱</div>
+    </div>
+  </div>
+  <div class="spark" aria-hidden="true"></div>
+  <div class="hint">🔊 Click to start party mode</div>
+
+  <script>
+    const btn = document.getElementById('dangerBtn');
+    const club = document.getElementById('club');
+
+    let audioCtx = null;
+    let playing = false;
+    let intervalId = null;
+
+    function ensureAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function blip(freq = 220, dur = 0.08, type = 'square', vol = 0.05, when = 0) {
+      const now = audioCtx.currentTime + when;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(vol, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + dur + 0.02);
+    }
+
+    function startDiscoLoop() {
+      // 120 BPM-ish disco loop: kick-ish + hi synth blips
+      intervalId = setInterval(() => {
+        // downbeats
+        blip(90, 0.12, 'sawtooth', 0.06, 0.0);
+        blip(90, 0.12, 'sawtooth', 0.06, 0.5);
+
+        // hi groove
+        blip(440, 0.07, 'square', 0.03, 0.125);
+        blip(660, 0.07, 'square', 0.03, 0.25);
+        blip(550, 0.07, 'square', 0.03, 0.375);
+        blip(440, 0.07, 'square', 0.03, 0.625);
+        blip(740, 0.07, 'square', 0.03, 0.75);
+        blip(660, 0.07, 'square', 0.03, 0.875);
+      }, 1000);
+    }
+
+    function activateParty() {
+      if (playing) return;
+      ensureAudio();
+      playing = true;
+
+      club.classList.add('active');
+      document.querySelector('.hint').textContent = '🪩 THE CATS HAVE BEEN SUMMONED 🪩';
+
+      // first immediate hits
+      blip(110, 0.15, 'sawtooth', 0.07, 0);
+      blip(660, 0.08, 'square', 0.03, 0.08);
+      blip(880, 0.08, 'square', 0.03, 0.16);
+
+      startDiscoLoop();
+    }
+
+    btn.addEventListener('click', activateParty);
+  </script>
+</body>
+</html>
