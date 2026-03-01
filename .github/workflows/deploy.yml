@@ -2,7 +2,7 @@ name: Build & Deploy (Swarm)
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -32,7 +32,7 @@ jobs:
         with:
           images: ${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=master
+            type=raw,value=main
             type=sha,prefix=sha-
 
       - name: Build and push image

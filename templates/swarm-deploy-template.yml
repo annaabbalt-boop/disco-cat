@@ -6,7 +6,7 @@ name: Swarm Deploy Template
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -37,7 +37,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ env.IMAGE_NAME }}:master
+            ${{ env.IMAGE_NAME }}:main
             ${{ env.IMAGE_NAME }}:sha-${{ github.sha }}
 
   deploy:
@@ -59,7 +59,7 @@ jobs:
             version: "3.9"
             services:
               web:
-                image: ${{ env.IMAGE_NAME }}:master
+                image: ${{ env.IMAGE_NAME }}:main
                 networks:
                   - traefik-public
                 deploy:

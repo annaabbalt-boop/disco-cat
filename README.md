@@ -4,9 +4,9 @@ Static "DO NOT PRESS" site with CI/CD to Docker Swarm.
 
 ## CI/CD flow
 
-On push to `master`:
+On push to `main`:
 1. GitHub Actions builds Docker image from `Dockerfile`
-2. Pushes image to GHCR: `ghcr.io/annaabbalt-boop/disco-cat:master`
+2. Pushes image to GHCR: `ghcr.io/annaabbalt-boop/disco-cat:main`
 3. SSH to Swarm manager
 4. Runs `docker stack deploy` for stack `disco-cat`
 
@@ -23,7 +23,6 @@ Set these in repo settings → **Secrets and variables** → **Actions**:
 
 ## Notes
 
-- Workflow is triggered by branch `master`.
-- If your default branch is `main`, either rename to `master` or change workflow trigger.
+- Workflow is triggered by branch `main`.
 - Swarm nodes must be able to pull from `ghcr.io`.
 - Traefik network `traefik-public` must exist.

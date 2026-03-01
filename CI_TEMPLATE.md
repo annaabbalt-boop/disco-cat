@@ -17,9 +17,9 @@ Set in GitHub Actions secrets:
 - `SWARM_SSH_KEY`
 
 ## 3) Branch trigger
-Pipeline runs on push to `master`.
+Pipeline runs on push to `main`.
 
 ## 4) Result
-On each push to `master`:
+On each push to `main`:
 - Build and push image to GHCR
 - Deploy/update Docker Swarm stack via SSH
