@@ -3,7 +3,7 @@
 Use this for new repos.
 
 ## 1) Copy workflow
-Copy `.github/workflows/swarm-deploy-template.yml` to new repo as `.github/workflows/deploy.yml`.
+Copy `templates/swarm-deploy-template.yml` from this repo into new repo as `.github/workflows/deploy.yml`.
 
 Update:
 - `IMAGE_NAME` (example: `ghcr.io/annaabbalt-boop/my-app`)
